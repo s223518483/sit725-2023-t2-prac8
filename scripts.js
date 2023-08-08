@@ -9,20 +9,6 @@ $(document).ready(function () {
   });
 });
 */
-const cardList = [
-  {
-    title: "kitchen 2",
-    path: "images/kitchen_2.png",
-    subTitle: "About kitchen 2",
-    description: "Description of kitchen 2",
-  },
-  {
-    title: "kitchen 3",
-    path: "images/kitchen_3.png",
-    subTitle: "About kitchen 3",
-    description: "Description of kitchen 3",
-  },
-];
 
 const addCards = (items) => {
   items.forEach((item) => {
@@ -49,21 +35,43 @@ const addCards = (items) => {
   });
 };
 
-const formSumitted = () => {
+const formSubmitted = () => {
   let formData = {};
-  formData.firstName = $("#first_name").val();
-  formData.lastName = $("#last_name").val();
-  formData.password = $("#password").val();
-  formData.email = $("#email").val();
+  formData.title = $("#title").val();
+  formData.subTitle = $("#subTitle").val();
+  formData.path = $("#path").val();
+  formData.description = $("#description").val();
 
   console.log(formData);
+  postKitchen(formData);
 };
+
+function postKitchen(kitchen) {
+  $.ajax({
+    url: "/api/kitchen",
+    type: "POST",
+    data: kitchen,
+    success: (result) => {
+      if (result.statusCode === 201) {
+        alert("Kitchen post success");
+      }
+    },
+  });
+}
+
+function getAllKitchens() {
+  $.get("/api/kitchens", (response) => {
+    if (response.statusCode === 200) {
+      addCards(response.data);
+    }
+  });
+}
 
 $(document).ready(function () {
   $(".materialboxed").materialbox();
   $("#formSubmit").click(() => {
-    formSumitted();
+    formSubmitted();
   });
-  addCards(cardList);
   $(".modal").modal();
+  getAllKitchens();
 });
