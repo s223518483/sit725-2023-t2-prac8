@@ -1,10 +1,9 @@
 let express = require("express");
 let app = express();
-const { MongoClient, ServerApiVersion, Collection } = require("mongodb");
+let { MongoClient, ServerApiVersion, collection } = require("mongodb-legacy");
 const uri =
   "mongodb+srv://sit725admin:sit725admin@cluster0.x84y69q.mongodb.net/?retryWrites=true&w=majority";
 let port = process.env.PORT || 3000;
-let collection;
 
 app.use(express.static(__dirname + "/"));
 app.use(express.json());
@@ -15,7 +14,7 @@ const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
     strict: true,
-    deprecationErrors: true,
+    deprecationErrors: false,
   },
 });
 
@@ -23,8 +22,8 @@ async function runDB() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-    collection = client.db().collection("Kitchen");
-    console.log(collection);
+    collection = client.db().collection("kitchen");
+    //console.log(collection);
 
     // Send a ping to confirm a successful connection
     //await client.db("admin").command({ ping: 1 });
@@ -58,6 +57,12 @@ app.get("/api/kitchens", (req, res) => {
   });
 });
 
+app.get("/api/kitchens", (req, res) => {
+  getAllKitchens_Promise().then((result) => {
+    console.log(result);
+  });
+});
+
 app.post("/api/kitchen", (req, res) => {
   let kitchen = req.body;
   postKitchen(kitchen, (err, result) => {
@@ -75,7 +80,21 @@ function getAllKitchens(callback) {
   collection.find({}).toArray(callback);
 }
 
+/*
+let getAllKitchens_Promise = () => {
+  return new Promise((resolve, reject) => {
+    getAllKitchens((err, result) => {
+      if (!err) return resolve(result);
+    });
+  });
+};
+
+getAllKitchens_Promise().then((result) => {
+  console.log(result);
+});
+*/
+
 app.listen(port, () => {
-  console.log("server start");
+  //console.log("server start");
   runDB();
 });
